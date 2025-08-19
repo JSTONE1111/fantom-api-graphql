@@ -3,9 +3,10 @@ package svc
 
 import (
 	"fmt"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 // stiScannerTickDurationSlow represents the long delay between STI info pull attempts.
@@ -21,7 +22,7 @@ type stiScanner struct {
 	top     uint64
 }
 
-// name returns the name of the service used by orchestrator.
+// name returns the name of the service used by the orchestrator.
 func (sti *stiScanner) name() string {
 	return "staker info scanner"
 }
@@ -43,7 +44,7 @@ func (sti *stiScanner) execute() {
 	// start the ticker
 	scanTick := time.NewTicker(stiScannerTickDurationFast)
 
-	// make sure to clean up on exit
+	// make sure to clean up on the exit
 	defer func() {
 		scanTick.Stop()
 		sti.mgr.finished(sti)
@@ -64,7 +65,7 @@ func (sti *stiScanner) execute() {
 }
 
 // syncTop re-checks the top validator ID.
-// The top is used as a range of the scan loop.
+// The top is used as a range of the scan loops.
 func (sti *stiScanner) syncTop() error {
 	// the top is updated on the scan loop reset only
 	if sti.current == 0 {
@@ -79,7 +80,7 @@ func (sti *stiScanner) syncTop() error {
 		log.Noticef("%d validators found", ls)
 		sti.top = ls
 
-		// start the loop, the first val has #1
+		// the first val has #1
 		sti.current++
 	}
 	return nil
@@ -106,7 +107,7 @@ func (sti *stiScanner) next() bool {
 		log.Infof("staker #%d is not available in STI", sti.current)
 	}
 
-	// advance to the next staker closing the loop at the top
+	// advance to the next staker, closing the loop at the top
 	sti.current++
 	if sti.top < sti.current {
 		sti.current = 0

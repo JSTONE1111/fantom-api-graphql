@@ -5,25 +5,27 @@ import (
 	"fantom-api-graphql/internal/repository/rpc/contracts"
 	"fantom-api-graphql/internal/types"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"io"
 	"math/big"
 	"net/http"
 	"net/mail"
 	"net/url"
 	"regexp"
+	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 //go:generate tools/abigen.sh --abi ./contracts/abi/sti.json --pkg contracts --type StakerInfo --out ./contracts/staker_info.go
 
-// stiRequestTimeout is number of seconds we wait for the staker information request to finish.
+// stiRequestTimeout is a number of seconds we wait for the staker information request to finish.
 const stiRequestTimeout = 1 * time.Second
 
 // stiNameCheckRegex is the expression used to check for staker name validity
-var stiNameCheckRegex = regexp.MustCompile(`^[\w\s.\-_'$()]+$`)
+var stiNameCheckRegex = regexp.MustCompile(`^[\w\s.\-:_'$()]+$`)
 
-// StakerInfo extracts an extended staker information from smart contact by their id.
+// StakerInfo extracts extended staker information from smart contact by their id.
 func (ftm *FtmBridge) StakerInfo(id *hexutil.Big) (*types.StakerInfo, error) {
 	if id == nil {
 		return nil, fmt.Errorf("staker ID not given")
@@ -53,7 +55,7 @@ func (ftm *FtmBridge) StakerInfo(id *hexutil.Big) (*types.StakerInfo, error) {
 	}
 
 	// try to download JSON for the info
-	return ftm.downloadStakerInfo(stUrl)
+	return ftm.downloadStakerInfo(strings.TrimSpace(stUrl))
 }
 
 // downloadStakerInfo tries to download staker information from the given URL address.
@@ -61,13 +63,13 @@ func (ftm *FtmBridge) downloadStakerInfo(stUrl string) (*types.StakerInfo, error
 	// log what we are about to do
 	ftm.log.Debugf("downloading staker info address [%s]", stUrl)
 
-	// make a http client
+	// make an http client
 	cl := http.Client{Timeout: stiRequestTimeout}
 
 	// prep request
 	req, err := http.NewRequest(http.MethodGet, stUrl, nil)
 	if err != nil {
-		ftm.log.Errorf("can not request given staker info at [%s]; %s", stUrl, err.Error())
+		ftm.log.Errorf("failed to get staker info at [%s]; %s", stUrl, err.Error())
 		return nil, err
 	}
 

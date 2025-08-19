@@ -6,7 +6,7 @@ toolchain go1.23.3
 
 require (
 	github.com/allegro/bigcache v1.2.1
-	github.com/ethereum/go-ethereum v1.14.12
+	github.com/ethereum/go-ethereum v1.14.13
 	github.com/graph-gophers/graphql-go v1.5.0
 	github.com/graph-gophers/graphql-transport-ws v0.0.2
 	github.com/klauspost/compress v1.17.11
