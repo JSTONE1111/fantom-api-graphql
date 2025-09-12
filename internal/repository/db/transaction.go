@@ -121,7 +121,9 @@ func (db *MongoDbBridge) AddTransaction(block *types.Block, trx *types.Transacti
 	}
 
 	// try to do the insert
-	if _, err := col.InsertOne(context.Background(), trx); err != nil {
+	if _, err := col.ReplaceOne(context.Background(), bson.D{
+		{Key: fiTransactionPk, Value: trx.Hash.String()},
+	}, trx, new(options.ReplaceOptions).SetUpsert(true)); err != nil {
 		db.log.Critical(err)
 		return err
 	}

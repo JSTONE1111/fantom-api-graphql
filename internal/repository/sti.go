@@ -11,11 +11,12 @@ package repository
 import (
 	"bytes"
 	"fantom-api-graphql/internal/types"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
-// PullStakerInfo extracts an extended staker information from smart contact.
+// PullStakerInfo extracts extended staker information from smart contact.
 func (p *proxy) PullStakerInfo(id *hexutil.Big) (*types.StakerInfo, error) {
 	return p.rpc.StakerInfo(id)
 }
